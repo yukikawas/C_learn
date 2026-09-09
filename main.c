@@ -5,27 +5,31 @@
 
 void printhint(int guess, int secret);
 void printhistory(int history[], int count);
-void play(int secret, int guess, int attempts, const int MAX_TRY, int history[]);
+void play(const int MAX_TRY);
 
 int main () {
+    srand((unsigned)time(NULL));
     while(1){
-        int secret, guess, attempts = 0;
-        int history[100];
         const int MAX_TRY = 10;
-        char choice[] = "";
-        play(secret, guess, attempts, MAX_TRY, history);
-        scanf("want play again?(y/n)%d", &choice);
-        if (choice == "y") {
+        char ch;
+        play(MAX_TRY);
+        printf("\nwant play again?(y/n)\n");
+        while ((ch = getchar()) != '\n' && ch != EOF);
+        ch = getchar();
+        
+        if (ch == 'y' || ch == 'Y') {
             continue;
         }
-        else if (choice == "n") {
+        else if (ch == 'n' || ch == 'N') {
+            printf("see you next time~\n");
             break;
         }
         else {
             printf("please input your choice!\n");
+            break;
         }
     }
-
+    return 0;
 }
 
 
@@ -50,8 +54,9 @@ void printhistory(int history[], int count) {
 }
 
 
-void play(int secret, int guess, int attempts, const int MAX_TRY, int history[]){
-    srand((unsigned)time(NULL));
+void play(const int MAX_TRY){
+    int secret, guess, attempts = 0;
+    int history[100];
     secret = rand() % 100 + 1;
     printf("I have 1~100 number, guess it!\n\n");
     while(attempts < MAX_TRY) {
