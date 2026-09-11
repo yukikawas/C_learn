@@ -152,3 +152,72 @@ int main(void)
 
     return 0;
 }
+
+
+
+/*
+===== C猜数字游戏 学习笔记 【第二个C程序】=====
+1. 头文件
+stdio.h  : printf / scanf / getchar 输入输出
+stdlib.h : rand() 随机数、srand()设置随机种子
+time.h   : time(NULL) 获取当前时间，用来做随机种子
+> srand((unsigned)time(NULL)); 只需要在main调用一次，不要放到循环/play里面！
+
+2. 随机数公式
+rand() % 100 + 1  → 生成 [1,100] 的整数
+rand()%n → 范围 0 ~ n-1
+
+3. 输入缓冲区核心知识点（C特有，Python input自动处理）
+scanf读取数字，会把【回车换行符 \n】残留在输入缓冲区
+getchar() 会读到残留的\n，造成自动跳过输入！
+标准安全清空缓冲区模板：
+int tmp;
+while ((tmp = getchar()) != '\n' && tmp != EOF);
+⚠️ 变量必须用int，不能char，因为EOF = -1，char存不下！
+
+4. scanf返回值ret
+int ret = scanf("%d", &guess);
+ret=1 ：成功读到1个整数
+ret!=1：用户输入字母/符号，读取失败，需要清空缓冲区再继续
+
+5. 数组作为函数参数
+void printhistory(int history[], int count)
+数组传参本质是传【首地址】，不是完整拷贝数组
+函数内修改数组，外面原数组会跟着变（和普通变量传副本完全不同）
+
+6. 传值 vs 传地址
+普通int变量传递：传【副本】，函数内部修改不影响外部
+数组：隐式传地址
+
+7. const修饰
+const int MAX_TRY 常量，运行期间不能修改
+
+8. 循环
+while(1) 死循环，靠break跳出；continue直接回到循环开头
+
+9. 函数拆分思想
+把一局游戏逻辑封装进play()，解耦，方便复用，结构化编程
+
+10. 边界坑点
+① getchar返回类型是int，不是char
+② 非法输入不清空缓冲区会无限死循环
+③ 判断y/n的时候，大小写兼容 ch == 'y' || ch == 'Y'
+
+11. 数组越界保护
+history[100]，最多存100次猜测，本项目MAX_TRY=10，安全
+*/
+/*
+新增知识点：输入范围校验
+if (guess < 1 || guess > 100)
+- || 逻辑或，满足任意一个条件就成立
+- continue：直接跳到while循环开头，后面代码不执行
+当前逻辑：超出范围的数字，不消耗attempts次数，也不存入history历史数组
+如果想要越界猜测也记录进历史，就把history赋值语句放到这个if判断前面
+
+运算符优先级小提醒：
+> < >= <= 高于 || &&
+所以 guess <1 || guess>100 不用额外加括号
+
+scanf返回值判断：
+ret != 1 代表读取失败（输入字母符号），此时要清空缓冲区，防止死循环
+*/
